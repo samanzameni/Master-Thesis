@@ -41,15 +41,16 @@ for i=1:N
     particles(2,i)=complex(rand*max_v*((-1)^(fix(rand*2))) , rand*max_v*((-1)^(fix(rand*2))));
 end
 
-entropy=zeros(1,70);
-distance=zeros(1,70);
-%quality=zeros(1,70);
+entropy=zeros(1,100);
+distance=zeros(1,100);
 % Entropy impurity
-% threshold=3.5;
+ Ethreshold=3;
 %  GINI impurity
-threshold=0.90;
-it=70;
-for k=1:70
+ Gthreshold=0.7;
+%  Misclassification error impurity
+ Mthreshold=0.7;
+it=100;
+for k=1:100
     
     %%% initialization, illastration, evaluation , and end condition %%%
     %% initialization
@@ -85,18 +86,32 @@ for k=1:70
         P(i) = sum( uniqueBParticles(i)==BParticles );
     end
     r=0.5;
-    % calculation of entropy as a parameter to show the end of algorithm
+
+    % calculation of Entropy and Gini and Misclassification Error as a parameter to show the end of algorithm
+
     % Entropy impurity
-    % entropy(1,k) =  -sum((P/N).*log(P/N));
+
+     entropy(1,k) =  -sum((P/N).*log(P/N));
+     entropyMax =  -(1/2).*log(1/2)*uBParticleNum;
+    if entropy(1,k) < Ethreshold
+        it=k;
+        break;
+    end
     
-    %  GINI impurity
-    entropy(1,k) =  sum(P/N.*(1 - P/N)) ;
-  
-    entropyMax =  -(1/2).*log(1/2)*uBParticleNum;
-      giniMax =  (1/2.*(1 - 1/2))*uBParticleNum;
-    
-    
-    if entropy(1,k)<threshold
+    %  Gini impurity
+
+    gini(1,k) =  sum(P/N.*(1 - P/N));
+    giniMax =  (1/2.*(1 - 1/2))*uBParticleNum;
+    if gini(1,k) < Gthreshold
+        it=k;
+        break;
+    end
+
+    %  Misclassification error impurity
+
+    Merror(1,k) =  (1-max(P/N));
+    MerrorMax =  (1-(1/2))*uBParticleNum;
+    if Merror(1,k) < Mthreshold
         it=k;
         break;
     end
@@ -184,25 +199,31 @@ for k=1:70
     
 end
 
+% % Quality
 
-
-
-
-% for k=1:it
-% if((entropyMax)~=0 && max(distance)~=0)
-%     quality(1,k)=((1-(entropy(1,k)/entropyMax))*(1-(distance(1,k)/max(distance))));
-% else
-%     quality(1,k)=(entropyMax)+.001;
-%    end
-% end
-
-for k=1:it
-    if((giniMax)~=0 && max(distance)~=0)
-        quality(1,k)=((1-(entropy(1,k)/giniMax))*(1-(distance(1,k)/max(distance))));
-    else
-        quality(1,k)=(giniMax)+.001;
+ for k=1:it
+     if((entropyMax)~=0 && max(distance)~=0)
+        Equality(1,k)=((1-(entropy(1,k)/entropyMax))*(1-(distance(1,k)/max(distance))));
+ else
+        Equality(1,k)=(entropyMax)+.001;
     end
-end
+ end
+
+ for k=1:it
+     if((giniMax)~=0 && max(distance)~=0)
+         Gquality(1,k)=((1-(gini(1,k)/giniMax))*(1-(distance(1,k)/max(distance))));
+     else
+         Gquality(1,k)=(giniMax)+.001;
+     end
+ end
+
+ for k=1:it
+     if((MerrorMax)~=0 && max(distance)~=0)
+         Mquality(1,k)=((1-(Merror(1,k)/MerrorMax))*(1-(distance(1,k)/max(distance))));
+     else
+         Mquality(1,k)=(MerrorMax)+.001;
+     end
+ end
 
 
 status = xlswrite(inputfilename, inputMat);
@@ -214,29 +235,62 @@ outputMat2=outputMat(:,2);
 save('outputData1.mat','outputMat1');
 save('outputData2.mat','outputMat2');
 
-figure(81)
-plot(uniquefixedParticles(sortindx(particleNum-5:particleNum)),'.b')
-hold
-plot(PUs(1,:),'rs');title('');
-
-figure(82)
-plot(particles,'.b')
-hold
-plot(PUs(1,:),'rs');title('last iteration');
-
-figure(83)
-plot((1:it),entropy(1:it));title('impurity');
-axis([0 it 0 max(entropy)+0.5])
-figure(84)
-plot((1:it),distance(1:it));title('distance');
-figure(85)
-plot((1:it),quality(1:it));title('quality');
-figure(86)
-plot((1:it),quality(1:it),'bo:');title('quality');
-h = lsline;
-set(h(1),'color','r')
 %max entropy
 fprintf('max entropy = %d \n',entropyMax);
 %max gini
 fprintf('max gini = %d \n',giniMax);
+%max misclassification
+fprintf('max misclassification = %d \n',MerrorMax);
+
+
+figure(101)
+plot(uniquefixedParticles(sortindx(particleNum-5:particleNum)),'.b')
+hold
+plot(PUs(1,:),'rs');title('');
+
+figure(102)
+plot(particles,'.b')
+hold
+plot(PUs(1,:),'rs');title('last iteration');
+
+figure(103)
+plot((1:it),entropy(1:it));title('Entropy impurity');
+axis([0 it 0 max(entropy)+0.5])
+
+figure(104)
+plot((1:it),gini(1:it));title('Gini Impurity');
+axis([0 it 0 max(gini)+0.5])
+
+figure(105)
+plot((1:it),Merror(1:it));title('Misclassification Error Impurity');
+axis([0 it 0 max(Merror)+0.5])
+
+figure(106)
+plot((1:it),distance(1:it));title('Distance');
+
+figure(107)
+plot((1:it),Equality(1:it));title('Entropy Quality');
+
+figure(108)
+plot((1:it),Equality(1:it),'bo:');title('Entropy Quality with Regression Line.');
+h = lsline;
+set(h(1),'color','r')
+
+figure(109)
+plot((1:it),Gquality(1:it));title('Gini Quality');
+
+figure(110)
+plot((1:it),Gquality(1:it),'bo:');title('Gini Quality with Regression Line.');
+h = lsline;
+set(h(1),'color','r')
+
+figure(111)
+plot((1:it),Mquality(1:it));title('Misclassification Error Quality');
+
+figure(112)
+plot((1:it),Mquality(1:it),'bo:');title('Misclassification Error Quality with Regression Line.');
+h = lsline;
+set(h(1),'color','r')
+
+
 

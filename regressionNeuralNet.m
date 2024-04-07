@@ -27,14 +27,6 @@ realNet.divideParam.testRatio = 10/100;
 % Test the Network
 realOutputs = realNet(inputs(:,trainNumbers+1:end));
 
-% % Perform 10-fold cross-validation
-% realcv = crossval(realPerformance, 'KFold', 10 );
-% 
-% % Obtain cross-validated loss
-% realloss = kfoldLoss(realcv);
-% 
-% disp(['Cross-validated realloss: ' num2str(realloss)]);
-
 realPerformance = perform(realNet,realTargets(:,trainNumbers+1:end),realOutputs);
 
 figure(89);
@@ -54,14 +46,6 @@ imaginaryTargets=imaginaryTargets';
 % Create a Fitting Network
 hiddenLayerSize = 10;
 imaginaryNet = fitnet(hiddenLayerSize);
-
-% % Perform 10-fold cross-validation
-% imaginarycv = crossval(imaginaryModel,inputs,imaginaryTargets, 'KFold', 10);
-% 
-% % Obtain cross-validated loss
-% imaginaryloss = kfoldLoss(imaginarycv);
-% 
-% disp(['Cross-validated imaginaryloss: ' num2str(imaginaryloss)]);
 
 % Set up Division of Data for Training, Validation, Testing
 imaginaryNet.divideParam.trainRatio = 90/100;

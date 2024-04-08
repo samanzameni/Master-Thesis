@@ -13,6 +13,7 @@ testNumbers=size(X,1)-trainNumbers;
 %% Naive Bayes
 realModel = fitcnb(X(1:trainNumbers,:),realPart(1:trainNumbers,:),'CategoricalPredictors','all');
 
+
 %Predict Real model
 realPredict = predict(realModel,X(trainNumbers+1:end,:));
 

@@ -13,6 +13,14 @@ testNumbers=size(X,1)-trainNumbers;
 %support vector machine (SVM)
 realModel = fitrsvm(X(1:trainNumbers,:),realPart(1:trainNumbers,:));
 
+% Perform 10-fold cross-validation
+realcv = crossval(realModel, 'KFold', 10 );
+
+% Obtain cross-validated loss
+realloss = kfoldLoss(realcv);
+
+disp(['Cross-validated realloss: ' num2str(realloss)]);
+
 %Predict Real model
 realPredict = predict(realModel,X(trainNumbers+1:end,:));
 
@@ -32,6 +40,14 @@ imagePart= imagePart.outputMat2;
 %support vector machine (SVM)
 imaginaryModel= fitrsvm(X(1:trainNumbers,:),imagePart(1:trainNumbers,:));
 
+% Perform 10-fold cross-validation
+imaginarycv = crossval(imaginaryModel, 'KFold', 10);
+
+% Obtain cross-validated loss
+imaginaryloss = kfoldLoss(imaginarycv);
+
+disp(['Cross-validated imaginaryloss: ' num2str(imaginaryloss)]);
+
 %predict imaginary model
 imaginaryPredict = predict(imaginaryModel,X(trainNumbers+1:end,:));
 imaginaryError=immse(imagePart(trainNumbers+1:end,:),imaginaryPredict);
@@ -42,6 +58,3 @@ plot(imagePart(trainNumbers+1:end,:),'-bs');
 hold
 plot(imaginaryPredict,'-or');title(str);
 legend('desired','predicted','Location','northwest');
-
-%predict(realModel,[,,])
-%predict(imaginaryModel,[,,])

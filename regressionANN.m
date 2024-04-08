@@ -11,7 +11,15 @@ trainNumbers=round(0.9*size(X,1));
 testNumbers=size(X,1)-trainNumbers;
 
 %% Neural Network
-realModel = fitcnet(X(1:trainNumbers,:),realPart(1:trainNumbers,:));
+realModel = fitrnet(X(1:trainNumbers,:),realPart(1:trainNumbers,:));
+
+% Perform 10-fold cross-validation
+realcv = crossval(realModel, 'KFold', 10 );
+
+% Obtain cross-validated loss
+realloss = kfoldLoss(realcv);
+
+disp(['Cross-validated realloss: ' num2str(realloss)]);
 
 %Predict Real model
 realPredict = predict(realModel,X(trainNumbers+1:end,:));
@@ -31,7 +39,15 @@ imagePart = load('outputData2.mat');
 imagePart= imagePart.outputMat2;
 
 %% Neural Network
-imaginaryModel= fitcnet(X(1:trainNumbers,:),imagePart(1:trainNumbers,:));
+imaginaryModel= fitrnet(X(1:trainNumbers,:),imagePart(1:trainNumbers,:));
+
+% Perform 10-fold cross-validation
+imaginarycv = crossval(imaginaryModel, 'KFold', 10);
+
+% Obtain cross-validated loss
+imaginaryloss = kfoldLoss(imaginarycv);
+
+disp(['Cross-validated imaginaryloss: ' num2str(imaginaryloss)]);
 
 %predict imaginary model
 imaginaryPredict = predict(imaginaryModel,X(trainNumbers+1:end,:));

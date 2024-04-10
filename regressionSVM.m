@@ -1,5 +1,3 @@
-clear;
-close;
 
 X = load('inputData.mat');
 X=X.inputMat;
@@ -19,15 +17,17 @@ realcv = crossval(realModel, 'KFold', 10 );
 % Obtain cross-validated loss
 realloss = kfoldLoss(realcv);
 
-disp(['Cross-validated realloss: ' num2str(realloss)]);
+disp(['SVM Cross-validated realloss: ' num2str(realloss)]);
 
 %Predict Real model
 realPredict = predict(realModel,X(trainNumbers+1:end,:));
 
 realError=immse(realPart(trainNumbers+1:end,:),realPredict);
 
-figure(87);
-str = strcat('real part prediction MSE = ',num2str(realError));
+disp(['SVM real part prediction MSE = ' num2str(realError)]);
+
+figure(119);
+str = strcat('real part Cross-validated loss = ',num2str(realloss));
 plot(realPart(trainNumbers+1:end,:),'-bs');
 hold
 plot(realPredict,'-or');title(str);
@@ -46,14 +46,17 @@ imaginarycv = crossval(imaginaryModel, 'KFold', 10);
 % Obtain cross-validated loss
 imaginaryloss = kfoldLoss(imaginarycv);
 
-disp(['Cross-validated imaginaryloss: ' num2str(imaginaryloss)]);
+disp(['SVM Cross-validated imaginaryloss: ' num2str(imaginaryloss)]);
 
 %predict imaginary model
 imaginaryPredict = predict(imaginaryModel,X(trainNumbers+1:end,:));
+
 imaginaryError=immse(imagePart(trainNumbers+1:end,:),imaginaryPredict);
 
-figure(88);
-str = strcat('imaginary part prediction MSE = ',num2str(imaginaryError));
+disp(['SVM imaginary part prediction MSE = ' num2str(imaginaryError)]);
+
+figure(120);
+str = strcat('imaginary part Cross-validated loss = ',num2str(imaginaryloss));
 plot(imagePart(trainNumbers+1:end,:),'-bs');
 hold
 plot(imaginaryPredict,'-or');title(str);

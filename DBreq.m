@@ -5,6 +5,5 @@ power=h(d,maxPower);
 channel=calculateChannel(d,maxChannel);
 time=calculateTime();
 
-%     printf("distance = %d \n",d);
-fprintf('distance = %d \n',d);
+% fprintf('distance = %d \n',d);
 end

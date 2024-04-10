@@ -3,6 +3,7 @@
 clear all
 close all
 clc
+
 inputfilename = 'InputData.xlsx';
 outputfilename = 'OutputData.xlsx';
 
@@ -144,7 +145,7 @@ for k=1:100
     
     %% # measurment
     [p,channel,time] = DBreq(loc, PUs, max_p,10);
-    fprintf('power = %d time = %d channel = %d \n',p,time,channel);
+    % fprintf('power = %d time = %d channel = %d \n',p,time,channel);
     inputMat(k,1:3) = [real(loc),imag(loc),p];
     outputMat(k,1:2)=[real(PUs(1,:)),imag(PUs(1,:))];
     
@@ -187,15 +188,15 @@ for k=1:100
     end
     
     
-    if(mod(k,5)==1)
-        figure(k)
-        %     str = sprintf("number of iteration = %d",k);
-        str = strcat('number of iteration = ',int2str(k));
-        plot(particles,'.b')
-        hold
-        plot(PUs(1,:),'rs');
-        title(str);
-    end
+     if(mod(k,5)==1)
+         figure(k)
+         %     str = sprintf("number of iteration = %d",k);
+         str = strcat('number of iteration = ',int2str(k));
+         plot(particles,'.b')
+         hold
+         plot(PUs(1,:),'rs');
+         title(str);
+     end
     
 end
 
@@ -235,62 +236,73 @@ outputMat2=outputMat(:,2);
 save('outputData1.mat','outputMat1');
 save('outputData2.mat','outputMat2');
 
-%max entropy
-fprintf('max entropy = %d \n',entropyMax);
-%max gini
-fprintf('max gini = %d \n',giniMax);
-%max misclassification
-fprintf('max misclassification = %d \n',MerrorMax);
+
+ figure(101)
+ plot(uniquefixedParticles(sortindx(particleNum-5:particleNum)),'.b')
+ hold
+ plot(PUs(1,:),'rs');title('');
+  
+ figure(102)
+ plot(particles,'.b')
+ hold
+ plot(PUs(1,:),'rs');title('last iteration');
+ 
+ figure(103)
+ plot((1:it),entropy(1:it));title('Entropy impurity');
+ axis([0 it 0 max(entropy)+0.5])
+ 
+ figure(104)
+ plot((1:it),gini(1:it));title('Gini Impurity');
+ axis([0 it 0 max(gini)+0.5])
+ 
+ figure(105)
+ plot((1:it),Merror(1:it));title('Misclassification Error Impurity');
+ axis([0 it 0 max(Merror)+0.5])
+ 
+ figure(106)
+ plot((1:it),distance(1:it));title('Distance');
+ 
+ figure(107)
+ plot((1:it),Equality(1:it));title('Entropy Quality');
+ 
+ figure(108)
+ plot((1:it),Equality(1:it),'bo:');title('Entropy Quality with Regression Line.');
+ h = lsline;
+ set(h(1),'color','r')
+ 
+ figure(109)
+ plot((1:it),Gquality(1:it));title('Gini Quality');
+ 
+ figure(110)
+ plot((1:it),Gquality(1:it),'bo:');title('Gini Quality with Regression Line.');
+ h = lsline;
+ set(h(1),'color','r')
+ 
+ figure(111)
+ plot((1:it),Mquality(1:it));title('Misclassification Error Quality');
+ 
+ figure(112)
+ plot((1:it),Mquality(1:it),'bo:');title('Misclassification Error Quality with Regression Line.');
+ h = lsline;
+ set(h(1),'color','r')
 
 
-figure(101)
-plot(uniquefixedParticles(sortindx(particleNum-5:particleNum)),'.b')
-hold
-plot(PUs(1,:),'rs');title('');
-
-figure(102)
-plot(particles,'.b')
-hold
-plot(PUs(1,:),'rs');title('last iteration');
-
-figure(103)
-plot((1:it),entropy(1:it));title('Entropy impurity');
-axis([0 it 0 max(entropy)+0.5])
-
-figure(104)
-plot((1:it),gini(1:it));title('Gini Impurity');
-axis([0 it 0 max(gini)+0.5])
-
-figure(105)
-plot((1:it),Merror(1:it));title('Misclassification Error Impurity');
-axis([0 it 0 max(Merror)+0.5])
-
-figure(106)
-plot((1:it),distance(1:it));title('Distance');
-
-figure(107)
-plot((1:it),Equality(1:it));title('Entropy Quality');
-
-figure(108)
-plot((1:it),Equality(1:it),'bo:');title('Entropy Quality with Regression Line.');
-h = lsline;
-set(h(1),'color','r')
-
-figure(109)
-plot((1:it),Gquality(1:it));title('Gini Quality');
-
-figure(110)
-plot((1:it),Gquality(1:it),'bo:');title('Gini Quality with Regression Line.');
-h = lsline;
-set(h(1),'color','r')
-
-figure(111)
-plot((1:it),Mquality(1:it));title('Misclassification Error Quality');
-
-figure(112)
-plot((1:it),Mquality(1:it),'bo:');title('Misclassification Error Quality with Regression Line.');
-h = lsline;
-set(h(1),'color','r')
-
-
-
+figure(113);
+subplot(2, 1, 1);
+plot(Equality(:), 'LineWidth', 2);
+hold on;
+plot(Gquality(:), 'LineWidth', 2);
+plot(Mquality(:), 'LineWidth', 2);
+xlabel('Iteration');
+ylabel('Value');
+legend('Entropy', 'Gini', 'Misclassification Error');
+title('Comparison of the quality of three impurities');
+grid on;
+subplot(2, 1, 2);
+bar([Equality(:), Gquality(:), Mquality(:)], 'grouped');
+xlabel('Iteration');
+ylabel('Value');
+legend('Entropy', 'Gini', 'Misclassification Error');
+title('Comparison of the quality of three impurities');
+grid on;
+set(gcf, 'Position', [100, 100, 800, 600]);  

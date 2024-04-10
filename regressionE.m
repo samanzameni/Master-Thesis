@@ -1,5 +1,4 @@
-clear;
-close;
+
 
 X = load('inputData.mat');
 X=X.inputMat;
@@ -10,7 +9,7 @@ realPart= realPart.outputMat1;
 trainNumbers=round(0.9*size(X,1));
 testNumbers=size(X,1)-trainNumbers;
 
-%% ensemble
+%% ensemble Learning
 realModel = fitrensemble(X(1:trainNumbers,:),realPart(1:trainNumbers,:));
 
 % Perform 10-fold cross-validation
@@ -19,15 +18,17 @@ realcv = crossval(realModel, 'KFold', 10 );
 % Obtain cross-validated loss
 realloss = kfoldLoss(realcv);
 
-disp(['Cross-validated realloss: ' num2str(realloss)]);
+disp(['EL Cross-validated realloss: ' num2str(realloss)]);
 
 %Predict Real model
 realPredict = predict(realModel,X(trainNumbers+1:end,:));
 
 realError=immse(realPart(trainNumbers+1:end,:),realPredict);
 
-figure(97);
-str = strcat('real part prediction MSE = ',num2str(realError));
+disp(['EL real part prediction MSE = ' num2str(realError)]);
+
+figure(117);
+str = strcat('real part Cross-validated loss = ',num2str(realloss));
 plot(realPart(trainNumbers+1:end,:),'-bs');
 hold
 plot(realPredict,'-or');title(str);
@@ -37,7 +38,7 @@ legend('desired','predicted','Location','northwest');
 
 imagePart = load('outputData2.mat');
 imagePart= imagePart.outputMat2;
-%% ensemble
+%% ensemble Learning
 imaginaryModel= fitrensemble(X(1:trainNumbers,:),imagePart(1:trainNumbers,:));
 
 % Perform 10-fold cross-validation
@@ -46,14 +47,17 @@ imaginarycv = crossval(imaginaryModel, 'KFold', 10);
 % Obtain cross-validated loss
 imaginaryloss = kfoldLoss(imaginarycv);
 
-disp(['Cross-validated imaginaryloss: ' num2str(imaginaryloss)]);
+disp(['EL Cross-validated imaginaryloss: ' num2str(imaginaryloss)]);
 
 %predict imaginary model
 imaginaryPredict = predict(imaginaryModel,X(trainNumbers+1:end,:));
+
 imaginaryError=immse(imagePart(trainNumbers+1:end,:),imaginaryPredict);
 
-figure(98);
-str = strcat('imaginary part prediction MSE = ',num2str(imaginaryError));
+disp(['EL imaginary part prediction MSE = ' num2str(imaginaryError)]);
+
+figure(118);
+str = strcat('imaginary part Cross-validated loss = ',num2str(imaginaryloss));
 plot(imagePart(trainNumbers+1:end,:),'-bs');
 hold
 plot(imaginaryPredict,'-or');title(str);

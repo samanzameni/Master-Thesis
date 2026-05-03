@@ -24,10 +24,10 @@ realPredict = predict(realModel,X(trainNumbers+1:end,:));
 
 realError=immse(realPart(trainNumbers+1:end,:),realPredict);
 
-disp(['SVM real part prediction MSE = ' num2str(realError)]);
+disp(['SVM X-coordinate prediction MSE = ' num2str(realError)]);
 
-figure(119);
-str = strcat('real part Cross-validated loss = ',num2str(realloss));
+figure(1019);
+str = strcat('SVM X-coordinate Cross-validated loss = ',num2str(realloss));
 plot(realPart(trainNumbers+1:end,:),'-bs');
 hold
 plot(realPredict,'-or');title(str);
@@ -53,10 +53,10 @@ imaginaryPredict = predict(imaginaryModel,X(trainNumbers+1:end,:));
 
 imaginaryError=immse(imagePart(trainNumbers+1:end,:),imaginaryPredict);
 
-disp(['SVM imaginary part prediction MSE = ' num2str(imaginaryError)]);
+disp(['SVM Y-coordinate prediction MSE = ' num2str(imaginaryError)]);
 
-figure(120);
-str = strcat('imaginary part Cross-validated loss = ',num2str(imaginaryloss));
+figure(1020);
+str = strcat('SVM Y-coordinate Cross-validated loss = ',num2str(imaginaryloss));
 plot(imagePart(trainNumbers+1:end,:),'-bs');
 hold
 plot(imaginaryPredict,'-or');title(str);

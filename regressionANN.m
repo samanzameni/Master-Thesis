@@ -24,10 +24,10 @@ realPredict = predict(realModel,X(trainNumbers+1:end,:));
 
 realError=immse(realPart(trainNumbers+1:end,:),realPredict);
 
-disp(['ANN real part prediction MSE = ' num2str(realError)]);
+disp(['ANN X-coordinate prediction MSE = ' num2str(realError)]);
 
-figure(113);
-str = strcat('real part Cross-validated loss = ',num2str(realloss));
+figure(1021);
+str = strcat('ANN X-coordinate Cross-validated loss = ',num2str(realloss));
 plot(realPart(trainNumbers+1:end,:),'-bs');
 hold
 plot(realPredict,'-or');title(str);
@@ -54,10 +54,10 @@ imaginaryPredict = predict(imaginaryModel,X(trainNumbers+1:end,:));
 
 imaginaryError=immse(imagePart(trainNumbers+1:end,:),imaginaryPredict);
 
-disp(['ANN imaginary part prediction MSE = ' num2str(imaginaryError)]);
+disp(['ANN Y-coordinate prediction MSE = ' num2str(imaginaryError)]);
 
-figure(114);
-str = strcat('imaginary part Cross-validated loss = ',num2str(imaginaryloss));
+figure(1022);
+str = strcat('ANN Y-coordinate Cross-validated loss = ',num2str(imaginaryloss));
 plot(imagePart(trainNumbers+1:end,:),'-bs');
 hold
 plot(imaginaryPredict,'-or');title(str);

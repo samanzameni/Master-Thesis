@@ -303,3 +303,48 @@ ANN_Comparison_Table = table(Compared_With, MSE_X_Diff_Percent, MSE_Y_Diff_Perce
 
 disp(ANN_Comparison_Table);
 disp('=====================================================================================');
+%% 7. Calculate Percentage Difference of SVM Compared to Others
+disp(' ');
+disp('=====================================================================================');
+disp('   Percentage Difference (%) in Error of Support Vector Machine (SVM) Compared to Other Models');
+disp('   (Positive values mean the other model has HIGHER error than SVM / SVM performs better)');
+disp('=====================================================================================');
+
+% Index of Support Vector Machine (SVM) in the arrays is 1
+svm_idx = 1; 
+% Indices of models to compare against: ANN (2), Decision Tree (3), Ensemble (4)
+compare_indices = [2, 3, 4];
+Compared_With = {'ANN'; 'Decision Tree'; 'Ensemble'};
+
+% Preallocate arrays for percentages
+MSE_X_Diff_Percent = zeros(3, 1);
+MSE_Y_Diff_Percent = zeros(3, 1);
+CV_Loss_X_Diff_Percent = zeros(3, 1);
+CV_Loss_Y_Diff_Percent = zeros(3, 1);
+
+% Calculate percentages
+for i = 1:3
+    idx = compare_indices(i);
+    
+    % MSE Difference (%)
+    % Formula: ((Error_Other - Error_SVM) / Error_Other) * 100
+    MSE_X_Diff_Percent(i) = ((mse_x_results(idx) - mse_x_results(svm_idx)) / mse_x_results(idx)) * 100;
+    MSE_Y_Diff_Percent(i) = ((mse_y_results(idx) - mse_y_results(svm_idx)) / mse_y_results(idx)) * 100;
+    
+    % CV Loss Difference (%)
+    CV_Loss_X_Diff_Percent(i) = ((cv_loss_x(idx) - cv_loss_x(svm_idx)) / cv_loss_x(idx)) * 100;
+    CV_Loss_Y_Diff_Percent(i) = ((cv_loss_y(idx) - cv_loss_y(svm_idx)) / cv_loss_y(idx)) * 100;
+end
+
+% Round values for a cleaner display
+MSE_X_Diff_Percent = round(MSE_X_Diff_Percent, 2);
+MSE_Y_Diff_Percent = round(MSE_Y_Diff_Percent, 2);
+CV_Loss_X_Diff_Percent = round(CV_Loss_X_Diff_Percent, 2);
+CV_Loss_Y_Diff_Percent = round(CV_Loss_Y_Diff_Percent, 2);
+
+% Create and display the table
+SVM_Comparison_Table = table(Compared_With, MSE_X_Diff_Percent, MSE_Y_Diff_Percent, ...
+    CV_Loss_X_Diff_Percent, CV_Loss_Y_Diff_Percent);
+
+disp(SVM_Comparison_Table);
+disp('=====================================================================================');

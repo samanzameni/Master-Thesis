@@ -17,7 +17,7 @@ max_p=100; %% maximum power an SU can use
 %% initiate the problem:
 %% generate real pu locations
 PUnum=1;
-PUs=zeros(2,PUnum);
+PUs=complex(zeros(2,PUnum)); 
 rmse_count = 0;
 
 for i=1:PUnum
@@ -28,31 +28,46 @@ end
 
 %%initial the filtering parameters
 T=1; %% time difference between two queries
-N = 5000;
+N = 1000;
 
-sigma=complex(0.01, 0.01); %%noise intensity
+sigma= 0.01; %%noise intensity
 sys_noise_cov = [1/3*T^3, 1/2*T^2; 1/2*T^2, T]*sigma; % Noise covariance in the system
 F=[1 T; 0 1];
 
 
 
 sigma_meas = 5;
-particles=zeros(2,N);
+particles = complex(zeros(2,N));
 
 for i=1:N
     particles(1,i)=complex(fix(rand*m), fix(rand*n));
     particles(2,i)=complex(rand*max_v*((-1)^(fix(rand*2))) , rand*max_v*((-1)^(fix(rand*2))));
 end
 
-entropy=zeros(1,1000);
-distance=zeros(1,1000);
+entropy = zeros(1, 1000);
+gini = zeros(1, 1000);
+Merror = zeros(1, 1000);
+entropyMax = zeros(1, 1000);
+giniMax = zeros(1, 1000);
+MerrorMax = zeros(1, 1000);
+distance = zeros(1, 1000);
+rmse = zeros(1, 1000);
+z = zeros(1, N);
+Equality = zeros(1, 1000);
+Gquality = zeros(1, 1000);
+Mquality = zeros(1, 1000);
+
 % Entropy impurity
- Ethreshold=0.1;
+ Ethreshold=0.001;
 %  GINI impurity
- Gthreshold=0.1;
+ Gthreshold=0.001;
 %  Misclassification error impurity
- Mthreshold=0.1;
+ Mthreshold=0.001;
+
 it=1000;
+inputMat = zeros(1000, 3);
+outputMat = zeros(1000, 2);
+
 for k=1:1000
 
     %%% initialization, illastration, evaluation , and end condition %%%
@@ -62,7 +77,11 @@ for k=1:1000
     
     % the PUs will move:
     for j=1:PUnum
-        PUs(:,j)  = F*PUs(:,j) + sqrtm(sys_noise_cov) * [complex(randn, randn); 0];
+        noise_x = sqrtm(sys_noise_cov) * randn(2,1); % نویز برای بعد x (موقعیت و سرعت)
+        noise_y = sqrtm(sys_noise_cov) * randn(2,1); % نویز برای بعد y (موقعیت و سرعت)
+        complex_noise = complex(noise_x, noise_y);   % ترکیب به صورت بردار مختلط 2 در 1
+        
+        PUs(:,j) = F*PUs(:,j) + complex_noise;
         PUs(1,j) = complex(min(max(real(PUs(1,j)), 0), m), min(max(imag(PUs(1,j)), 0), n));
     end
     
@@ -80,24 +99,31 @@ for k=1:1000
     % putting particles with fix equal values together and counting the number of them in order to calculate the
     % real weights of particles which shows the concentration in some point.
     
-    l = 10;
-    BParticles = (fix(particles(1,:)./l))*l;
-    uniqueBParticles = unique(BParticles);
-    P = zeros(size(uniqueBParticles));
-    uBParticleNum = size(uniqueBParticles,2);
-    
-    for i = 1:uBParticleNum
-        P(i) = sum( uniqueBParticles(i)==BParticles );
-    end
-    r=0.5;
+   l = 10;
+
+% bin بندی دو بعدی
+Bx = fix(real(particles(1,:)) / l) * l;
+By = fix(imag(particles(1,:)) / l) * l;
+
+BParticles = complex(Bx, By);
+uniqueBParticles = unique(BParticles);
+uBParticleNum = length(uniqueBParticles);  % این خط را اضافه کنید
+
+P = zeros(1, uBParticleNum);
+
+for i = 1:uBParticleNum
+    P(i) = sum(BParticles == uniqueBParticles(i));
+end
+
+r = 0.5;
 
     % calculation of Entropy and Gini and Misclassification Error as a parameter to show the end of algorithm
 
     % Entropy impurity
-
-     entropy(1,k) =  -sum((P/N).*log(P/N));
-   %  entropyMax =  -(1/2).*log(1/2)*uBParticleNum;
-     entropyMax(1,k) =  -(1/2).*log(1/2)*uBParticleNum;
+    P_norm = P / N;
+    P_norm(P_norm==0) = eps;
+    entropy(1,k) =  -sum(P_norm .* log(P_norm));
+    entropyMax(k) = log(uBParticleNum);
     if entropy(1,k) < Ethreshold
         it=k;
     %    break;
@@ -106,8 +132,7 @@ for k=1:1000
     %  Gini impurity
 
     gini(1,k) =  sum(P/N.*(1 - P/N));
-  %  giniMax =  (1/2.*(1 - 1/2))*uBParticleNum;
-    giniMax(1,k) =  (1/2.*(1 - 1/2))*uBParticleNum;
+    giniMax(k) = 1 - 1/uBParticleNum;
     if gini(1,k) < Gthreshold
         it=k;
    %     break;
@@ -116,8 +141,7 @@ for k=1:1000
     %  Misclassification error impurity
 
     Merror(1,k) =  (1-max(P/N));
- %   MerrorMax =  (1-(1/2))*uBParticleNum;
-    MerrorMax(1,k) =  (1-(1/2))*uBParticleNum;
+    MerrorMax(k) = 1 - 1/uBParticleNum;
     if Merror(1,k) < Mthreshold
         it=k;
     %    break;
@@ -140,12 +164,16 @@ for k=1:1000
     
     [val, sortindx] = sort(particlesDensity);
     
-    distance(1,k) = min(abs(uniquefixedParticles(sortindx(particleNum-4:particleNum))-PUs(1,1)));
+    idx_start = max(1, particleNum-4);
+    distance(1,k) = min(abs(uniquefixedParticles(sortindx(idx_start:particleNum))-PUs(1,1)));
+   
     
     % RMSE: میانگین خطای ریشه مجذور روی همه‌ی ذرات
     rmse_count = rmse_count + 1;
-    rmse(1, rmse_count) = sqrt(mean(abs(particles(1,:) - PUs(1,1)).^2));
-    
+    % تخمین وزن‌دار موقعیت
+    estimated_pos = mean(particles(1,:));
+    rmse(k) = sqrt(abs(estimated_pos - PUs(1,1))^2);
+
     %%%%%%%%%%%%%%Here, we do the particle filter%%%%%%%%%%%%%%%%%
     
     
@@ -158,17 +186,20 @@ for k=1:1000
     outputMat(k,1:2)=[real(PUs(1,:)),imag(PUs(1,:))];
     
       %% # prediction
-    particles_star=zeros(2,N);
-    
+particles_star = complex(zeros(2,N));    
     for j = 1:N
         % the particles should move with the PU motion model in each iteration
-        particles_star(:,j) = F*particles(:,j)+ sqrtm(sys_noise_cov)*[complex(randn, randn); complex(randn, randn);];
+        noise_x = sqrtm(sys_noise_cov) * randn(2,1);
+        noise_y = sqrtm(sys_noise_cov) * randn(2,1);
+        complex_noise = complex(noise_x, noise_y);
+        
+        particles_star(:,j) = F*particles(:,j) + complex_noise;
         particles_star(1,j) = complex(min(max(real(particles_star(1,j)), 0), m), min(max(imag(particles_star(1,j)), 0), n));
         % محاسبه فاصله (چون مختصات مختلط است، abs همان فاصله اقلیدسی را می‌دهد)
         d_particle = abs(particles_star(1,j) - loc);
         
         % پیش‌بینی توان با تابع پیوسته
-        z(j) = h_continuous(d_particle);
+        z(j) = h_continuous(d_particle, max_p);
     end
     
     %% # updating the weights
@@ -192,10 +223,10 @@ for k=1:1000
     
     
  
-        if (k == 1 || mod(k, 100) == 0)
+    if (k == 1 || mod(k, 100) == 0)
          figure(k)
          str = strcat('number of iteration = ', int2str(k));
-         plot(particles,'.b')
+         plot(particles(1,:),'.b')
          hold on;
          plot(PUs(1,:),'rs');
          title(str);
@@ -206,24 +237,24 @@ end
 % % Quality
 
  for k=1:it
-     if((entropyMax(1,k))~=0 && max(distance)~=0)
-        Equality(1,k)=((1-(entropy(1,k)/entropyMax(1,k)))*(1-(distance(1,k)/max(distance))));
+     if((entropyMax(1,k))~=0 && max(distance(1:it))~=0)
+        Equality(1,k)=((1-(entropy(1,k)/entropyMax(1,k)))*(1-(distance(1,k)/max(distance(1:it)))));
  else
         Equality(1,k)=(entropyMax(1,k))+.001;
     end
  end
 
  for k=1:it
-     if((giniMax(1,k))~=0 && max(distance)~=0)
-         Gquality(1,k)=((1-(gini(1,k)/giniMax(1,k)))*(1-(distance(1,k)/max(distance))));
+     if((giniMax(1,k))~=0 && max(distance(1:it))~=0)
+         Gquality(1,k)=((1-(gini(1,k)/giniMax(1,k)))*(1-(distance(1,k)/max(distance(1:it)))));
      else
          Gquality(1,k)=(giniMax(1,k))+.001;
      end
  end
 
  for k=1:it
-     if((MerrorMax(1,k))~=0 && max(distance)~=0)
-         Mquality(1,k)=((1-(Merror(1,k)/MerrorMax(1,k)))*(1-(distance(1,k)/max(distance))));
+     if((MerrorMax(1,k))~=0 && max(distance(1:it))~=0)
+         Mquality(1,k)=((1-(Merror(1,k)/MerrorMax(1,k)))*(1-(distance(1,k)/max(distance(1:it)))));
      else
          Mquality(1,k)=(MerrorMax(1,k))+.001;
      end
@@ -241,12 +272,13 @@ save('outputData2.mat','outputMat2');
 
 
  figure(1001)
- plot(uniquefixedParticles(sortindx(particleNum-5:particleNum)),'.b')
+ idx_start_fig = max(1, particleNum-5);
+ plot(uniquefixedParticles(sortindx(idx_start_fig:particleNum)),'.b')
  hold on;
  plot(PUs(1,:),'rs');title('five highest-density particle');
   
  figure(1002)
- plot(particles,'.b')
+ plot(particles(1,:),'.b')
  hold on;
  plot(PUs(1,:),'rs');title('last iteration');
  
@@ -384,4 +416,3 @@ ResultTable = table(Impurities, Harmonic_Mean, Arithmetic_Mean, Median, Geometri
 
 disp(ResultTable);
 disp('=========================================================================');
-

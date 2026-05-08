@@ -1,6 +1,5 @@
-%% تابع اندازه‌گیری پیوسته
-function z = h_continuous(d)
-    Pt = 100; % حداکثر توان
+function z = h_continuous(d , max_p)
     gamma = 30; % ضریب افت
-    z = Pt * exp(-d / gamma); 
+    d = abs(d);
+    z = max_p * exp(-d / gamma); 
 end

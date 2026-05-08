@@ -34,7 +34,7 @@ numSamples = size(X_all, 1);
 %% ------------------------------------
 %% 2. Shuffle Data (Very Important for Generalization)
 numSamples = size(X_all, 1);
-rng(42); % Set seed for reproducibility (optional)
+rng(42,'twister'); % Set seed for reproducibility (optional)
 % --- تقسیم‌بندی به Train و Test بر اساس توالی زمانی (بدون به هم ریختگی) ---
 trainRatio = 0.9;
 numTrain = floor(trainRatio * numSamples);

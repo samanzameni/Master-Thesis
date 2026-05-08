@@ -1,8 +1,6 @@
 
 %% clear everything
-clear all
-close all
-clc
+clc; clear; close all;
 
 inputfilename = 'InputData.xlsx';
 outputfilename = 'OutputData.xlsx';
@@ -89,11 +87,7 @@ for k=1:1000
     % generate random location for SU
     loc = complex(fix(rand*m), fix(rand*n));
     
-    %% illastration
-    if ( fix((k-1)/5) == (k-1)/5 )
-        %% figure(k)
-        %%plot(particles,'.b',PUs(1,:),'.r')
-    end
+   
     
     %% evaluation
     % putting particles with fix equal values together and counting the number of them in order to calculate the
@@ -186,7 +180,7 @@ r = 0.5;
     outputMat(k,1:2)=[real(PUs(1,:)),imag(PUs(1,:))];
     
       %% # prediction
-particles_star = complex(zeros(2,N));    
+        particles_star = complex(zeros(2,N));    
     for j = 1:N
         % the particles should move with the PU motion model in each iteration
         noise_x = sqrtm(sys_noise_cov) * randn(2,1);
@@ -222,7 +216,7 @@ particles_star = complex(zeros(2,N));
     end
     
     
- 
+ %% illastration
     if (k == 1 || mod(k, 100) == 0)
          figure(k)
          str = strcat('number of iteration = ', int2str(k));
@@ -230,6 +224,8 @@ particles_star = complex(zeros(2,N));
          hold on;
          plot(PUs(1,:),'rs');
          title(str);
+         filename = strcat('number of iteration = ', int2str(k)); 
+         print('-dpng', '-r300', filename);
     end  
 
 end
@@ -276,51 +272,60 @@ save('outputData2.mat','outputMat2');
  plot(uniquefixedParticles(sortindx(idx_start_fig:particleNum)),'.b')
  hold on;
  plot(PUs(1,:),'rs');title('five highest-density particle');
+ 
   
  figure(1002)
  plot(particles(1,:),'.b')
  hold on;
  plot(PUs(1,:),'rs');title('last iteration');
+ print('-dpng','-r300','last iteration');
  
  figure(1003)
  plot((1:it),entropy(1:it));title('Entropy impurity');
  axis([0 it 0 max(entropy)+0.5])
+ print('-dpng','-r300','Entropy impurity');
  
  figure(1004)
  plot((1:it),gini(1:it));title('Gini Impurity');
  axis([0 it 0 max(gini)+0.5])
+ print('-dpng','-r300','Gini Impurity');
  
  figure(1005)
  plot((1:it),Merror(1:it));title('Misclassification Error Impurity');
  axis([0 it 0 max(Merror)+0.5])
+ print('-dpng','-r300','Misclassification Error Impurity');
  
  figure(1006)
  plot((1:it),distance(1:it));title('Distance');
+ print('-dpng','-r300','Distance');
 
  
  figure(1007)
  plot((1:it),Equality(1:it));title('Entropy Quality');
  
  figure(1008)
- plot((1:it),Equality(1:it),'bo:');title('Entropy Quality with Regression Line.');
+ plot((1:it),Equality(1:it),'bo:');title('Entropy Quality with Regression Line');
  h = lsline;
  set(h(1),'color','r')
+ print('-dpng','-r300','Entropy Quality with Regression Line');
  
  figure(1009)
  plot((1:it),Gquality(1:it));title('Gini Quality');
  
  figure(1010)
- plot((1:it),Gquality(1:it),'bo:');title('Gini Quality with Regression Line.');
+ plot((1:it),Gquality(1:it),'bo:');title('Gini Quality with Regression Line');
  h = lsline;
  set(h(1),'color','r')
+ print('-dpng','-r300','Gini Quality with Regression Line');
  
  figure(1011)
  plot((1:it),Mquality(1:it));title('Misclassification Error Quality');
  
  figure(1012)
- plot((1:it),Mquality(1:it),'bo:');title('Misclassification Error Quality with Regression Line.');
+ plot((1:it),Mquality(1:it),'bo:');title('Misclassification Error Quality with Regression Line');
  h = lsline;
  set(h(1),'color','r')
+ print('-dpng','-r300','Misclassification Error Quality with Regression Line');
 
 
 figure(1013);
@@ -341,7 +346,8 @@ ylabel('Value');
 legend('Entropy', 'Gini', 'Misclassification Error');
 title('Comparison of the quality of three impurities');
 grid on;
-set(gcf, 'Position', [100, 100, 800, 600]); 
+set(gcf, 'Position', [100, 100, 800, 600]);
+print('-dpng','-r300','Comparison of the quality of three impurities');
 
 figure(1014)
 plot((1:rmse_count), rmse(1:rmse_count));
@@ -349,6 +355,7 @@ title('RMSE of Particle Filter');
 xlabel('Iteration');
 ylabel('RMSE');
 grid on;
+print('-dpng','-r300','RMSE of Particle Filter');
 
 %% =========================================================================
 %% Calculate Statistical Means and Percentage Differences

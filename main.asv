@@ -1,8 +1,6 @@
 
 %% clear everything
-clear all
-close all
-clc
+clc; clear; close all;
 
 inputfilename = 'InputData.xlsx';
 outputfilename = 'OutputData.xlsx';
@@ -89,11 +87,7 @@ for k=1:1000
     % generate random location for SU
     loc = complex(fix(rand*m), fix(rand*n));
     
-    %% illastration
-    if ( fix((k-1)/5) == (k-1)/5 )
-        %% figure(k)
-        %%plot(particles,'.b',PUs(1,:),'.r')
-    end
+   
     
     %% evaluation
     % putting particles with fix equal values together and counting the number of them in order to calculate the
@@ -186,7 +180,7 @@ r = 0.5;
     outputMat(k,1:2)=[real(PUs(1,:)),imag(PUs(1,:))];
     
       %% # prediction
-particles_star = complex(zeros(2,N));    
+        particles_star = complex(zeros(2,N));    
     for j = 1:N
         % the particles should move with the PU motion model in each iteration
         noise_x = sqrtm(sys_noise_cov) * randn(2,1);
@@ -222,7 +216,7 @@ particles_star = complex(zeros(2,N));
     end
     
     
- 
+ %% illastration
     if (k == 1 || mod(k, 100) == 0)
          figure(k)
          str = strcat('number of iteration = ', int2str(k));
@@ -230,6 +224,7 @@ particles_star = complex(zeros(2,N));
          hold on;
          plot(PUs(1,:),'rs');
          title(str);
+         print('-dpng','-r300','number of iteration = ');
     end  
 
 end

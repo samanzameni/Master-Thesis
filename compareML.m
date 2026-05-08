@@ -1,4 +1,3 @@
-clc; clear; close all;
 
 %% 1. Load Data
 X_data = load('inputData.mat');
@@ -156,7 +155,7 @@ subplot(2,2,1); plot(Y_x_test,'-bs'); hold on; plot(pred_x_svm,'-or'); hold off;
 subplot(2,2,2); plot(Y_x_test,'-bs'); hold on; plot(pred_x_ann,'-or'); hold off; title(['ANN X (MSE: ', num2str(mse_x_results(2), '%.1f'), ')']);
 subplot(2,2,3); plot(Y_x_test,'-bs'); hold on; plot(pred_x_dt,'-or'); hold off; title(['DT X (MSE: ', num2str(mse_x_results(3), '%.1f'), ')']);
 subplot(2,2,4); plot(Y_x_test,'-bs'); hold on; plot(pred_x_el,'-or'); hold off; title(['Ensemble X (MSE: ', num2str(mse_x_results(4), '%.1f'), ')']);
-
+print('-dpng','-r300','X-Coordinate Predictions');
 % ---------------------------------------------------------
 % Plot Y Coordinate Predictions (4 Models)
 figure('Name','Y-Coordinate Predictions','NumberTitle','off');
@@ -164,7 +163,7 @@ subplot(2,2,1); plot(Y_y_test,'-bs'); hold on; plot(pred_y_svm,'-or'); hold off;
 subplot(2,2,2); plot(Y_y_test,'-bs'); hold on; plot(pred_y_ann,'-or'); hold off; title(['ANN Y (MSE: ', num2str(mse_y_results(2), '%.1f'), ')']);
 subplot(2,2,3); plot(Y_y_test,'-bs'); hold on; plot(pred_y_dt,'-or'); hold off; title(['DT Y (MSE: ', num2str(mse_y_results(3), '%.1f'), ')']);
 subplot(2,2,4); plot(Y_y_test,'-bs'); hold on; plot(pred_y_el,'-or'); hold off; title(['Ensemble Y (MSE: ', num2str(mse_y_results(4), '%.1f'), ')']);
-
+print('-dpng','-r300','Y-Coordinate Predictions');
 % ---------------------------------------------------------
 % --- Style Definitions for Professional Plots ---
 fontName = 'Times New Roman';
@@ -218,7 +217,7 @@ for i = 1:numel(b1)
     text(xtips, ytips + yoffset, labels, 'HorizontalAlignment','center',...
         'VerticalAlignment','bottom', 'FontName', fontName, 'FontSize', labelFontSize-1, 'FontWeight','bold');
 end
-
+print('-dpng','-r300','Test MSE Comparison (Line & Bar)');
 %% ---------------------------------------------------------
 % 2. PUBLICATION-READY: CV Loss Comparison (Line & Bar)
 figure('Name','CV Loss Comparison (Professional)','NumberTitle','off', 'Color', 'w');
@@ -257,6 +256,7 @@ for i = 1:numel(b2)
     text(xtips, ytips + yoffset, labels, 'HorizontalAlignment','center',...
         'VerticalAlignment','bottom', 'FontName', fontName, 'FontSize', labelFontSize-1, 'FontWeight','bold');
 end
+print('-dpng','-r300','CV Loss Comparison (Line & Bar)');
 %% ========================================================
 %% 6. Calculate Percentage Difference of ANN Compared to Others
 disp(' ');

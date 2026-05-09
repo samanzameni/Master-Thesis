@@ -174,7 +174,7 @@ r = 0.5;
       
     
     %% # measurment
-    [p,channel,time] = DBreq(loc, PUs, max_p, max_ch);
+    [p,channel,time] = DBreq(loc, PUs, max_p, max_ch, sigma_meas);
     % fprintf('power = %d time = %d channel = %d \n',p,time,channel);
     inputMat(k,1:3) = [real(loc),imag(loc),p];
     outputMat(k,1:2)=[real(PUs(1,:)),imag(PUs(1,:))];

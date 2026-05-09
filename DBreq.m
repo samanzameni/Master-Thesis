@@ -1,8 +1,7 @@
-function [power,channel,time] = DBreq (loc, PUs, maxPower, maxChannel)
+function [power,channel,time] = DBreq (loc, PUs, maxPower, maxChannel, sigma_meas)
 
 d=min(abs(loc-PUs(1,:)));
 power=h_continuous(d,maxPower);
- sigma_meas = 5
  noise = sigma_meas * randn();
  power = max(0, power + noise);
 channel=calculateChannel(d,maxChannel);

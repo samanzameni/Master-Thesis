@@ -9,9 +9,9 @@ outputfilename = 'OutputData.xlsx';
 %% the region that is serviced by a GDB is divided into m * n square cells,
 m=500;
 n=500;
-max_v= m/500;%%<1/100 m maximum x velocity
+max_v= m/500;%%<1/500 m maximum x velocity
 max_p=100; %% maximum power an SU can use
-
+max_ch=10; %% maximum channel an SU can use
 %% initiate the problem:
 %% generate real pu locations
 PUnum=1;
@@ -174,7 +174,7 @@ r = 0.5;
       
     
     %% # measurment
-    [p,channel,time] = DBreq(loc, PUs, max_p,10);
+    [p,channel,time] = DBreq(loc, PUs, max_p, max_ch);
     % fprintf('power = %d time = %d channel = %d \n',p,time,channel);
     inputMat(k,1:3) = [real(loc),imag(loc),p];
     outputMat(k,1:2)=[real(PUs(1,:)),imag(PUs(1,:))];

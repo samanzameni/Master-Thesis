@@ -1,10 +1,9 @@
-function [channel] = calculateChannel(d, maxChannel) 
+function [channel] = calculateChannel(d, maxChannel)
     if(d<20)
       channel= maxChannel;
-    elseif (d<40)
+elseif (d<40)
       channel=int32(maxChannel/2);
-    else 
+else
       channel=int32(maxChannel/4);
-    end
-    
+end
 end

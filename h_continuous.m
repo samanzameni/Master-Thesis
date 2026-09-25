@@ -1,5 +1,5 @@
 function z = h_continuous(d , max_p)
-    gamma = 30; % ضریب افت
+    gamma = 30;
     d = abs(d);
     z = max_p * exp(-d / gamma);
 end

@@ -11,7 +11,7 @@ Y_y_all = imag_data.outputMat2;
 %% --- Add History (Delta / Rate of Change) ---
 [numSamples, numFeatures] = size(X_all);
 
-% پیش‌تخصیص (یک گام زمانی قبلی برای محاسبه اختلاف کافیست)
+% Pre-allocation (one previous time step is enough for difference calculation)
 X_enhanced = zeros(numSamples - 1, numFeatures * 2);
 Y_x_enhanced = Y_x_all(2 : end, :);
 Y_y_enhanced = Y_y_all(2 : end, :);
@@ -20,9 +20,9 @@ for i = 2 : numSamples
     current_meas = X_all(i, :);
     prev_meas = X_all(i-1, :);
     
-    delta_meas = current_meas - prev_meas; % محاسبه سرعت تغییرات (شیب)
+    delta_meas = current_meas - prev_meas; % Calculate rate of change (slope)
     
-    % ترکیب اندازه گیری فعلی با سرعت تغییرات
+    % Combine current measurement with rate of change
     X_enhanced(i-1, :) = [current_meas, delta_meas];
 end
 
@@ -34,21 +34,21 @@ numSamples = size(X_all, 1);
 %% 2. Shuffle Data (Very Important for Generalization)
 numSamples = size(X_all, 1);
 rng(42,'twister'); % Set seed for reproducibility (optional)
-% --- تقسیم‌بندی به Train و Test بر اساس توالی زمانی (بدون به هم ریختگی) ---
+% Split into Train and Test based on time sequence (without shuffling)
 trainRatio = 0.9;
 numTrain = floor(trainRatio * numSamples);
 
-% ابتدا جدا کردن داده‌های آموزش (۹۰ درصد اول مسیر)
+% First, separate the training data (first 90% of the path)
 X_train = X_all(1:numTrain, :);
 Y_x_train = Y_x_all(1:numTrain, :);
 Y_y_train = Y_y_all(1:numTrain, :);
 
-% سپس جدا کردن داده‌های تست (۱۰ درصد انتهای مسیر)
+% Then separate the test data (last 10% of the path)
 X_test = X_all(numTrain+1:end, :);
 Y_x_test = Y_x_all(numTrain+1:end, :);
 Y_y_test = Y_y_all(numTrain+1:end, :);
 
-% --- حالا فقط داده‌های آموزش را Shuffle می‌کنیم ---
+% Now only shuffle the training data
 idx_train = randperm(numTrain);
 X_train = X_train(idx_train, :);
 Y_x_train = Y_x_train(idx_train, :);
@@ -144,7 +144,7 @@ disp(['EL Y-coordinate CV Loss: ', num2str(loss_y_el), ' | Test MSE: ', num2str(
 %% 5. Plotting Comparisons (Updated for 4 Models)
 model_names = {'SVM', 'ANN', 'DT', 'Ensemble'};
 
-% ساخت آرایه‌های CV Loss 
+% Construction of arrays of CV Loss 
 cv_loss_x = [loss_x_svm, loss_x_ann, loss_x_dt, loss_x_el];
 cv_loss_y = [loss_y_svm, loss_y_ann, loss_y_dt, loss_y_el];
 

@@ -112,8 +112,8 @@ for k=1:1000
 Bx = fix(particles(1,:) / l) * l;
 By = fix(particles(2,:) / l) * l;
  
-% اینجا فقط برای گروه‌بندی راحت‌تر از عدد مختلط کمکی استفاده می‌کنیم؛
-% این دیگر بخشی از مدل حرکت/فیلتر نیست، صرفاً یک کلید یکتا برای x,y است.
+% Here we only use a helper complex number for easier grouping;
+% This is no longer part of the motion/filter model, just a unique key for x,y.
 BParticles = complex(Bx, By);
 uniqueBParticles = unique(BParticles);
 uBParticleNum = length(uniqueBParticles);
@@ -177,9 +177,9 @@ r = 0.5;
     distance(1,k) = min(abs(uniquefixedParticles(sortindx(idx_start:particleNum)) - PU_pos));
  
  
-    % RMSE: میانگین خطای ریشه مجذور روی همه‌ی ذرات
+    % RMSE: root mean square error averaged over all particles
     rmse_count = rmse_count + 1;
-    % تخمین موقعیت (میانگین x و y ذرات)
+    % Position estimate (mean of particles' x and y)
     estimated_pos = complex(mean(particles(1,:)), mean(particles(2,:)));
     rmse(k) = abs(estimated_pos - PU_pos);
  
@@ -203,22 +203,22 @@ r = 0.5;
         particles_star(1,j) = min(max(particles_star(1,j), 0), m);
         particles_star(2,j) = min(max(particles_star(2,j), 0), n);
  
-        % محاسبه فاصله اقلیدسی بین ذره پیش‌بینی‌شده و موقعیت SU
+        % Calculate Euclidean distance between the predicted particle and SU position
         dx = particles_star(1,j) - locX;
         dy = particles_star(2,j) - locY;
         d_particle = sqrt(dx^2 + dy^2);
  
-        % پیش‌بینی توان با تابع پیوسته
+        % Predict power using the continuous function
         z(j) = h_continuous(d_particle, max_p);
     end
  
     %% # updating the weights
     for j = 1:N
-        % محاسبه وزن با استفاده از توزیع گاوسی
+        % Calculate weight using Gaussian distribution
         weights(j) = exp(-((z(j) - p)^2) / (2 * sigma_meas^2));
     end
  
-    % جلوگیری از صفر شدن تمام وزن‌ها (Particle Depletion)
+    % Prevent all weights from becoming zero (Particle Depletion)
     if sum(weights) == 0
         weights = ones(1,N) / N;
     else

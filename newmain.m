@@ -13,8 +13,7 @@ max_p=100; %% maximum power an SU can use
 max_ch=10; %% maximum channel an SU can use
  
 %% ================== STATE REPRESENTATION ==================
-%% state = [x; y; vx; vy]  (4x1 real vector), instead of the
-%% previous complex(2,1) = [pos_complex; vel_complex] representation
+%% state = [x; y; vx; vy]  (4x1 real vector)
 %% =============================================================
  
 %% generate real pu locations
@@ -90,7 +89,7 @@ for k=1:1000
  
     weights=zeros(1,N)+1/N;
  
-    % the PUs will move (single 4x4 noise draw instead of two 2x2 draws):
+    % the PUs will move (single 4x4 noise draw):
     for j=1:PUnum
         noise = sqrtQ * randn(4,1);   % [x;y;vx;vy] correlated noise
         PUs(:,j) = F*PUs(:,j) + noise;
@@ -108,7 +107,7 @@ for k=1:1000
  
    l = 10;
  
-% bin بندی دو بعدی
+% 2D binning
 Bx = fix(particles(1,:) / l) * l;
 By = fix(particles(2,:) / l) * l;
  

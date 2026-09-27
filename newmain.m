@@ -31,7 +31,8 @@ end
 %%initial the filtering parameters
 T=1; %% time difference between two queries
 N = 1000;
- 
+particles_first = [];
+PUs_first = [];
 sigma= 0.01; %%noise intensity
  
 %% ----- 4x4 state transition matrix -----
@@ -70,6 +71,7 @@ z = zeros(1, N);
 Equality = zeros(1, 1000);
 Gquality = zeros(1, 1000);
 Mquality = zeros(1, 1000);
+
  
 % Entropy impurity
  Ethreshold=0.001;
@@ -232,15 +234,19 @@ r = 0.5;
  
  
  %% illastration
-    if (k == 1 || mod(k, 100) == 0)
-         figure(k)
-         str = strcat('number of iteration = ', int2str(k));
-         plot(particles(1,:), particles(2,:), '.b')
-         hold on;
-         plot(PUs(1,:), PUs(2,:), 'rs');
-         title(str);
-         filename = strcat('number of iteration = ', int2str(k));
-         print('-dpng', '-r300', filename);
+ %%    if (k == 1 || mod(k, 100) == 0)
+ %%         figure(k)
+ %%         str = strcat('number of iteration = ', int2str(k));
+ %%         plot(particles(1,:), particles(2,:), '.b')
+ %%         hold on;
+ %%         plot(PUs(1,:), PUs(2,:), 'rs');
+ %%         title(str);
+ %%         filename = strcat('number of iteration = ', int2str(k));
+ %%         print('-dpng', '-r300', filename);
+ %%    end
+    if k == 1
+    particles_first = particles;
+    PUs_first = PUs;
     end
  
 end
@@ -282,13 +288,14 @@ save('outputData1.mat','outputMat1');
 save('outputData2.mat','outputMat2');
  
  
- figure(1001)
- idx_start_fig = max(1, particleNum-5);
- topPts = uniquefixedParticles(sortindx(idx_start_fig:particleNum));
- plot(real(topPts), imag(topPts), '.b')
- hold on;
- plot(PUs(1,:), PUs(2,:), 'rs');title('five highest-density particle');
  
+ 
+ figure(1001)
+ plot(particles_first(1,:), particles_first(2,:), '.b')
+ hold on;
+ plot(PUs_first(1,:), PUs_first(2,:), 'rs');
+ title('first iteration');
+ print('-dpng','-r300','first iteration');
  
  figure(1002)
  plot(particles(1,:), particles(2,:), '.b')
@@ -343,8 +350,15 @@ save('outputData2.mat','outputMat2');
  set(h(1),'color','r')
  print('-dpng','-r300','Misclassification Error Quality with Regression Line');
  
- 
-figure(1013);
+ figure(1013)
+plot((1:rmse_count), rmse(1:rmse_count));
+title('RMSE of Particle Filter');
+xlabel('Iteration');
+ylabel('RMSE');
+grid on;
+print('-dpng','-r300','RMSE of Particle Filter');
+
+figure(1014);
 subplot(2, 1, 1);
 plot(Equality(:), 'LineWidth', 2);
 hold on;
@@ -365,13 +379,7 @@ grid on;
 set(gcf, 'Position', [100, 100, 800, 600]);
 print('-dpng','-r300','Comparison of the quality of three impurities');
  
-figure(1014)
-plot((1:rmse_count), rmse(1:rmse_count));
-title('RMSE of Particle Filter');
-xlabel('Iteration');
-ylabel('RMSE');
-grid on;
-print('-dpng','-r300','RMSE of Particle Filter');
+
  
 %% =========================================================================
 %% Calculate Statistical Means and Percentage Differences

@@ -1,7 +1,7 @@
 # Inference-Based Localization Attacks on Primary Users in Geolocation Database-Assisted Spectrum Sharing
 
 **Saman Zameni** · M.Sc. thesis research, University of Tehran
-**Status:** Under review, *Ad Hoc Networks*
+**Published:** S. Zameni, M. R. Taheri, H. Pouladi, *Ad Hoc Networks*, vol. 195, 104465, 2027. [doi:10.1016/j.adhoc.2026.104465](https://doi.org/10.1016/j.adhoc.2026.104465)
 
 > [!IMPORTANT]
 > **This is not the final code for this paper.** The repository contains a preliminary version of the simulation code. The final code used to produce the results reported in the paper will be released here once the paper is published.

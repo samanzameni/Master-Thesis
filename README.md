@@ -4,13 +4,13 @@
 **Published:** S. Zameni, M. R. Taheri, H. Pouladi, *Ad Hoc Networks*, vol. 195, 104465, 2027. [doi:10.1016/j.adhoc.2026.104465](https://doi.org/10.1016/j.adhoc.2026.104465)
 
 > [!IMPORTANT]
-> **This is not the final code for this paper.** The repository contains a preliminary version of the simulation code. The final code used to produce the results reported in the paper will be released here once the paper is published.
+> **This repository holds a preliminary version of the simulation code.** The final code, configuration files and saved simulation results used in the published paper are archived on Zenodo: [doi:10.5281/zenodo.23060444](https://doi.org/10.5281/zenodo.23060444).
 
 ## Abstract
 
 Geolocation database (GDB)-assisted spectrum sharing returns maximum-transmit-power (MTP) limits to secondary users (SUs) while protecting primary-user (PU) receivers from harmful interference. Because these limits depend on the position of the protected receiver, repeated responses can also carry spatial information. We formulate response-based PU localization as an inference problem and evaluate, in controlled simulations, a sequential particle filter (PF) and supervised coordinate regressors. Each MTP response is modelled as an interference-constrained ceiling with a conservative downward release perturbation and a matched likelihood, and posterior concentration is evaluated separately from localization error. Over 200 independent runs in a 500 m × 500 m region with 1,000 unconstrained random queries, the PF attains a final position root-mean-square error (RMSE) of 97.4 m (95% bootstrap interval 75.6–119.2 m), compared with 202.1 m for a motion-prior filter that ignores the responses. Its error varies non-monotonically, and simple same-information estimators reach comparable final-epoch error. A synthetic spatially varying propagation field, discrete power levels, query monitoring, limited query budgets and small multi-PU configurations each increase the error, in several cases to the level of the motion prior. None of the tested particle-concentration thresholds met the prespecified false-declaration criterion. On 20 held-out trajectories, the artificial neural network has the lowest coordinate mean squared error among the regressors, but all regressors have a larger trajectory RMSE than the PF on the same trajectories. Downward coarsening of the released power reduced retained power without increasing the attacker’s error. The conclusions are limited to the stated synthetic models and do not extend to operational GDBs.
 
-**Keywords:** Cognitive Radio Networks, Primary User Privacy, Secondary User, Geolocation Database, Particle Filter, Machine Learning, Location Inference Attack
+**Keywords:** Cognitive radio networks, Primary user privacy, Geolocation database, Particle filter, Machine learning, Location inference attack
 
 ## Repository contents
 
